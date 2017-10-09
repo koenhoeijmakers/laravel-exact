@@ -8,5 +8,12 @@
             "email": "koen@hoeijmakers.me"
         }
     ],
-    "require": {}
+    "require": {
+        "laravel/framework": "^5.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "KoenHoeijmakers\\LaravelExact\\": "src/"
+        }
+    }
 }
