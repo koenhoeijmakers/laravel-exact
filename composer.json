@@ -1,0 +1,12 @@
+{
+    "name": "koenhoeijmakers/laravel-exact",
+    "description": "An ExactOnline API client for Laravel.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Koen Hoeijmakers",
+            "email": "koen@hoeijmakers.me"
+        }
+    ],
+    "require": {}
+}
