@@ -25,12 +25,8 @@ class ExactServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $config = $this->app['config']['exact'];
-
-        if ($config['enabled']) {
-            $this->app->bind(Exact::class, function () use ($config) {
-                return new Exact(new Client());
-            });
-        }
+        $this->app->bind(Exact::class, function () {
+            return new Exact(new Client());
+        });
     }
 }
