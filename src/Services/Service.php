@@ -1,11 +1,11 @@
 <?php
 
-namespace KoenHoeijmakers\LaravelExact\Models;
+namespace KoenHoeijmakers\LaravelExact\Services;
 
 use GuzzleHttp\Client;
 use JsonSerializable;
 
-abstract class Model implements JsonSerializable
+abstract class Service implements JsonSerializable
 {
     /**
      * The client.
