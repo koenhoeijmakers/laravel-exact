@@ -8,6 +8,13 @@ use JsonSerializable;
 abstract class Service implements JsonSerializable
 {
     /**
+     * The resource uri.
+     *
+     * @var string
+     */
+    protected $resourceUri;
+
+    /**
      * The client.
      *
      * @var \GuzzleHttp\Client
@@ -178,6 +185,16 @@ abstract class Service implements JsonSerializable
     public function __set($attribute, $value)
     {
         $this->setAttribute($attribute, $value);
+    }
+
+    /**
+     * Get the resource uri.
+     *
+     * @return string
+     */
+    public function getResourceUri()
+    {
+        return $this->resourceUri;
     }
 
     /**
