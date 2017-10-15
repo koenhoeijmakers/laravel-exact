@@ -7,4 +7,5 @@ return [
     'division'      => env('EXACT_DIVISION'),       // Your division.
     'access_token'  => env('EXACT_ACCESS_TOKEN'),   // Your access token. (if not supplied we'll do the oAuth dance).
     'refresh_token' => env('EXACT_REFRESH_TOKEN'),  // Your refresh token. (if not supplied we'll do the oAuth dance).
+    'base_url'      => env('EXACT_BASE_URL', 'https://start.exactonline.nl'),
 ];
