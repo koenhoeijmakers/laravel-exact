@@ -2,10 +2,11 @@
 
 namespace KoenHoeijmakers\LaravelExact\Services;
 
+use Illuminate\Contracts\Support\Arrayable;
 use JsonSerializable;
 use KoenHoeijmakers\LaravelExact\Client;
 
-abstract class Service implements JsonSerializable
+abstract class Service implements JsonSerializable, Arrayable
 {
     /**
      * The resource uri.
@@ -132,6 +133,98 @@ abstract class Service implements JsonSerializable
     }
 
     /**
+     * Get the cast type for the given attribute.
+     *
+     * @param $attribute
+     * @return mixed
+     */
+    protected function getCastType($attribute)
+    {
+        return $this->casts[$attribute];
+    }
+
+    /**
+     * Get all casts.
+     *
+     * @return array
+     */
+    protected function getCasts()
+    {
+        return $this->casts;
+    }
+
+    /**
+     * Cast the given value to the given type.
+     *
+     * @param $value
+     * @param $type
+     * @return bool|int
+     */
+    protected function cast($value, $type)
+    {
+        if ($type === 'bool') {
+            return (bool) $value;
+        }
+
+        if ($type === 'int' || $type === 'integer') {
+            return (int) $value;
+        }
+
+        if ($type === 'float' || $type === 'double' || $type === 'real') {
+            return (float) $value;
+        }
+
+        if ($type === 'string') {
+            return (string) $value;
+        }
+
+        return $value;
+    }
+
+    /**
+     * Whether the given attribute has a cast.
+     *
+     * @param $attribute
+     * @return bool
+     */
+    protected function hasCast($attribute)
+    {
+        return array_key_exists($attribute, $this->getAttributes());
+    }
+
+    /**
+     * Get the attributes, but casted if necessary.
+     *
+     * @return array
+     */
+    protected function getCastedAttributes()
+    {
+        $attributes = $this->getAttributes();
+
+        if (!$this->hasCasts()) {
+            return $attributes;
+        }
+
+        foreach ($attributes as $attribute => $value) {
+            if ($this->hasCast($attributes)) {
+                $attributes[$attribute] = $this->cast($value, $this->getCastType($attribute));
+            }
+        }
+
+        return $attributes;
+    }
+
+    /**
+     * Whether the service has casts.
+     *
+     * @return bool
+     */
+    protected function hasCasts()
+    {
+        return !empty($this->getCasts());
+    }
+
+    /**
      * Get all of the model's attributes.
      *
      * @return array
@@ -214,6 +307,16 @@ abstract class Service implements JsonSerializable
      */
     public function jsonSerialize()
     {
-        return $this->getAttributes();
+        return $this->getCastedAttributes();
+    }
+
+    /**
+     * Specify data which should be serialized to an array.
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return $this->getCastedAttributes();
     }
 }
