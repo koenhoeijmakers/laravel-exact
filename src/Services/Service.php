@@ -2,8 +2,8 @@
 
 namespace KoenHoeijmakers\LaravelExact\Services;
 
-use GuzzleHttp\Client;
 use JsonSerializable;
+use KoenHoeijmakers\LaravelExact\Client;
 
 abstract class Service implements JsonSerializable
 {
@@ -15,9 +15,9 @@ abstract class Service implements JsonSerializable
     protected $resourceUri;
 
     /**
-     * The client.
+     * The exact client.
      *
-     * @var \GuzzleHttp\Client
+     * @var \KoenHoeijmakers\LaravelExact\Client
      */
     protected $client;
 
@@ -45,7 +45,7 @@ abstract class Service implements JsonSerializable
     /**
      * Model constructor.
      *
-     * @param \GuzzleHttp\Client $client
+     * @param \KoenHoeijmakers\LaravelExact\Client $client
      */
     public function __construct(Client $client)
     {
@@ -200,7 +200,7 @@ abstract class Service implements JsonSerializable
     /**
      * Get the client.
      *
-     * @return \GuzzleHttp\Client
+     * @return \KoenHoeijmakers\LaravelExact\ClientInterface
      */
     public function getClient()
     {
