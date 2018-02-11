@@ -19,5 +19,12 @@
         "files" : [
             "src/Support/helpers.php"
         ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "KoenHoeijmakers\\LaravelExact\\ExactServiceProvider"
+            ]
+        }
     }
 }
