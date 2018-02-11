@@ -19,48 +19,22 @@ class Client implements ClientInterface
     protected $client;
 
     /**
-     * The client id.
+     * The client config.
      *
-     * @var integer
+     * @var \KoenHoeijmakers\LaravelExact\ClientConfig
      */
-    protected $clientId;
-
-    /**
-     * The client secret.
-     *
-     * @var string
-     */
-    protected $clientSecret;
-
-    /**
-     * The access token.
-     *
-     * @var string
-     */
-    protected $accessToken;
-
-    /**
-     * The refresh token.
-     *
-     * @var string
-     */
-    protected $refreshToken;
-
-    /**
-     * The division.
-     *
-     * @var int
-     */
-    protected $division;
+    protected $clientConfig;
 
     /**
      * Exact constructor.
      *
-     * @param \GuzzleHttp\ClientInterface $client
+     * @param \GuzzleHttp\ClientInterface                $client
+     * @param \KoenHoeijmakers\LaravelExact\ClientConfig $clientConfig
      */
-    public function __construct(HttpInterface $client)
+    public function __construct(HttpInterface $client, ClientConfig $clientConfig)
     {
         $this->setClient($client);
+        $this->setClientConfig($clientConfig);
     }
 
     /**
@@ -87,116 +61,14 @@ class Client implements ClientInterface
     }
 
     /**
-     * Get the client secret.
+     * Set the config.
      *
-     * @return mixed
-     */
-    public function getClientSecret()
-    {
-        return $this->clientSecret;
-    }
-
-    /**
-     * Set the client secret.
-     *
-     * @param mixed $clientSecret
+     * @param \KoenHoeijmakers\LaravelExact\ClientConfig $clientConfig
      * @return $this
      */
-    public function setClientSecret($clientSecret)
+    public function setClientConfig(ClientConfig $clientConfig)
     {
-        $this->clientSecret = $clientSecret;
-
-        return $this;
-    }
-
-    /**
-     * Get the refresh token.
-     *
-     * @return mixed
-     */
-    public function getRefreshToken()
-    {
-        return $this->refreshToken;
-    }
-
-    /**
-     * Set the refresh token.
-     *
-     * @param mixed $refreshToken
-     * @return $this
-     */
-    public function setRefreshToken($refreshToken)
-    {
-        $this->refreshToken = $refreshToken;
-
-        return $this;
-    }
-
-    /**
-     * Get the access token.
-     *
-     * @return mixed
-     */
-    public function getAccessToken()
-    {
-        return $this->accessToken;
-    }
-
-    /**
-     * Set the access token.
-     *
-     * @param mixed $accessToken
-     * @return $this
-     */
-    public function setAccessToken($accessToken)
-    {
-        $this->accessToken = $accessToken;
-
-        return $this;
-    }
-
-    /**
-     * Get the client id.
-     *
-     * @return mixed
-     */
-    public function getClientId()
-    {
-        return $this->clientId;
-    }
-
-    /**
-     * Set the client id.
-     *
-     * @param mixed $clientId
-     * @return $this
-     */
-    public function setClientId($clientId)
-    {
-        $this->clientId = $clientId;
-
-        return $this;
-    }
-
-    /**
-     * Get the division.
-     *
-     * @return mixed
-     */
-    public function getDivision()
-    {
-        return $this->division;
-    }
-
-    /**
-     * Set the division.
-     *
-     * @param mixed $division
-     * @return $this;
-     */
-    public function setDivision($division)
-    {
-        $this->division = $division;
+        $this->clientConfig = $clientConfig;
 
         return $this;
     }

@@ -5,6 +5,7 @@ namespace App\Providers;
 use GuzzleHttp\Client as HttpClient;
 use Illuminate\Support\ServiceProvider;
 use KoenHoeijmakers\LaravelExact\Client;
+use KoenHoeijmakers\LaravelExact\ClientConfig;
 
 class ExactServiceProvider extends ServiceProvider
 {
@@ -25,8 +26,12 @@ class ExactServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(Client::class, function () {
-            return new Client(new HttpClient());
+        $this->app->singleton(ClientConfig::class, function ($app) {
+            return new ClientConfig($app['config']['exact']);
+        });
+
+        $this->app->bind(Client::class, function ($app) {
+            return new Client(new HttpClient(), $app[ClientConfig::class]);
         });
     }
 }
