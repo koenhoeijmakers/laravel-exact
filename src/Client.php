@@ -2,9 +2,9 @@
 
 namespace KoenHoeijmakers\LaravelExact;
 
-use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface as HttpInterface;
 
-class Exact
+class Client implements ClientInterface
 {
     /**
      * Exact Client Version.
@@ -14,7 +14,7 @@ class Exact
     /**
      * The client for talking to the api.
      *
-     * @var \GuzzleHttp\Client
+     * @var \GuzzleHttp\ClientInterface
      */
     protected $client;
 
@@ -56,9 +56,9 @@ class Exact
     /**
      * Exact constructor.
      *
-     * @param \GuzzleHttp\Client $client
+     * @param \GuzzleHttp\ClientInterface $client
      */
-    public function __construct(Client $client)
+    public function __construct(HttpInterface $client)
     {
         $this->setClient($client);
     }
@@ -66,7 +66,7 @@ class Exact
     /**
      * Get the client.
      *
-     * @return \GuzzleHttp\Client
+     * @return \GuzzleHttp\ClientInterface
      */
     public function getClient()
     {
@@ -76,10 +76,10 @@ class Exact
     /**
      * Set the client.
      *
-     * @param \GuzzleHttp\Client $client
+     * @param \GuzzleHttp\ClientInterface $client
      * @return $this
      */
-    public function setClient(Client $client)
+    public function setClient(HttpInterface $client)
     {
         $this->client = $client;
 
