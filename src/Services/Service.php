@@ -162,20 +162,26 @@ abstract class Service implements JsonSerializable, Arrayable
      */
     protected function cast($value, $type)
     {
-        if ($type === 'bool') {
-            return (bool) $value;
-        }
+        switch ($type) {
+            case 'bool':
+            case 'boolean':
+                return (bool) $value;
+                break;
 
-        if ($type === 'int' || $type === 'integer') {
-            return (int) $value;
-        }
+            case 'int':
+            case 'integer':
+                return (int) $value;
+                break;
 
-        if ($type === 'float' || $type === 'double' || $type === 'real') {
-            return (float) $value;
-        }
+            case 'float':
+            case 'double':
+            case 'real':
+                return (float) $value;
+                break;
 
-        if ($type === 'string') {
-            return (string) $value;
+            case 'string':
+                return (string) $value;
+                break;
         }
 
         return $value;
