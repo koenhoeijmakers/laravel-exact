@@ -10,7 +10,7 @@
     ],
     "require": {
         "php": "^7.0",
-        "laravel/support": "5.5.*|5.6.*",
+        "illuminate/support": "5.5.*|5.6.*",
         "guzzlehttp/guzzle": "^6.0"
     },
     "autoload": {
