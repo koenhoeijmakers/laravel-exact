@@ -3,6 +3,7 @@
 namespace KoenHoeijmakers\LaravelExact;
 
 use GuzzleHttp\ClientInterface as HttpInterface;
+use KoenHoeijmakers\LaravelExact\Support\Fluent\ServiceTraverser;
 
 class Client implements ClientInterface
 {
@@ -71,5 +72,38 @@ class Client implements ClientInterface
         $this->clientConfig = $clientConfig;
 
         return $this;
+    }
+
+    /**
+     * Dynamically handle calls to services.
+     *
+     * @param $name
+     * @return \KoenHoeijmakers\LaravelExact\Services\Service|\KoenHoeijmakers\LaravelExact\Support\Fluent\ServiceTraverser
+     */
+    public function __get($name)
+    {
+        return $this->getServiceTraverser()->resolve($name);
+    }
+
+    /**
+     * Dynamically handle calls to services.
+     *
+     * @param       $name
+     * @param array $arguments
+     * @return \KoenHoeijmakers\LaravelExact\Services\Service|\KoenHoeijmakers\LaravelExact\Support\Fluent\ServiceTraverser
+     */
+    public function __call($name, array $arguments =[])
+    {
+        return $this->getServiceTraverser()->resolve($name);
+    }
+
+    /**
+     * Get a new instance of the service traverser.
+     *
+     * @return \KoenHoeijmakers\LaravelExact\Support\Fluent\ServiceTraverser
+     */
+    protected function getServiceTraverser()
+    {
+        return new ServiceTraverser($this);
     }
 }

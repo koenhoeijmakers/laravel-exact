@@ -5,7 +5,7 @@ namespace KoenHoeijmakers\LaravelExact\Support\Fluent;
 use Illuminate\Support\Str;
 use KoenHoeijmakers\LaravelExact\ClientInterface;
 
-class NamespaceTraverser
+class ServiceTraverser
 {
     /**
      * The resolved parts.
@@ -36,7 +36,7 @@ class NamespaceTraverser
      *
      * @param string $name
      * @param array  $arguments
-     * @return \KoenHoeijmakers\LaravelExact\Services\Service|\KoenHoeijmakers\LaravelExact\Support\Fluent\NamespaceTraverser
+     * @return \KoenHoeijmakers\LaravelExact\Services\Service|\KoenHoeijmakers\LaravelExact\Support\Fluent\ServiceTraverser
      */
     public function __call($name, array $arguments = [])
     {
@@ -47,7 +47,7 @@ class NamespaceTraverser
      * Dynamically handle calls to resolve.
      *
      * @param $name
-     * @return \KoenHoeijmakers\LaravelExact\Services\Service|\KoenHoeijmakers\LaravelExact\Support\Fluent\NamespaceTraverser
+     * @return \KoenHoeijmakers\LaravelExact\Services\Service|\KoenHoeijmakers\LaravelExact\Support\Fluent\ServiceTraverser
      */
     public function __get($name)
     {
@@ -58,9 +58,9 @@ class NamespaceTraverser
      * Resolve the given part.
      *
      * @param $name
-     * @return \KoenHoeijmakers\LaravelExact\Support\Fluent\NamespaceTraverser|\KoenHoeijmakers\LaravelExact\Services\Service
+     * @return \KoenHoeijmakers\LaravelExact\Support\Fluent\ServiceTraverser|\KoenHoeijmakers\LaravelExact\Services\Service
      */
-    protected function resolve($name)
+    public function resolve($name)
     {
         $called = $this->getResolvedCall(
             $part = $this->formatPart($name)
