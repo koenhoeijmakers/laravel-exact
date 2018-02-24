@@ -3,8 +3,9 @@
 namespace KoenHoeijmakers\LaravelExact\Services;
 
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Arr;
 use JsonSerializable;
-use KoenHoeijmakers\LaravelExact\Client;
+use KoenHoeijmakers\LaravelExact\ClientInterface;
 
 abstract class Service implements JsonSerializable, Arrayable
 {
@@ -18,7 +19,7 @@ abstract class Service implements JsonSerializable, Arrayable
     /**
      * The exact client.
      *
-     * @var \KoenHoeijmakers\LaravelExact\Client
+     * @var \KoenHoeijmakers\LaravelExact\ClientInterface
      */
     protected $client;
 
@@ -44,12 +45,22 @@ abstract class Service implements JsonSerializable, Arrayable
     protected $casts = [];
 
     /**
+     * The primary key of the service.
+     *
+     * @var string
+     */
+    protected $primaryKey;
+
+    /**
      * Model constructor.
      *
-     * @param \KoenHoeijmakers\LaravelExact\Client $client
+     * @param array                                         $attributes
+     * @param \KoenHoeijmakers\LaravelExact\ClientInterface $client
      */
-    public function __construct(Client $client)
+    public function __construct(ClientInterface $client, array $attributes = [])
     {
+        $this->fillableFromArray($attributes);
+
         $this->client = $client;
     }
 
@@ -133,6 +144,16 @@ abstract class Service implements JsonSerializable, Arrayable
     }
 
     /**
+     * Whether the model exists.
+     *
+     * @return bool
+     */
+    public function exists()
+    {
+        return !is_null($this->getKey());
+    }
+
+    /**
      * Get the cast type for the given attribute.
      *
      * @param $attribute
@@ -140,7 +161,7 @@ abstract class Service implements JsonSerializable, Arrayable
      */
     protected function getCastType($attribute)
     {
-        return $this->casts[$attribute];
+        return Arr::get($this->casts, $attribute);
     }
 
     /**
@@ -248,7 +269,7 @@ abstract class Service implements JsonSerializable, Arrayable
      */
     public function getAttribute($attribute)
     {
-        return $this->attributes[$attribute];
+        return Arr::get($this->attributes, $attribute);
     }
 
     /**
@@ -304,6 +325,26 @@ abstract class Service implements JsonSerializable, Arrayable
     public function getClient()
     {
         return $this->client;
+    }
+
+    /**
+     * Get the primary key.
+     *
+     * @return string
+     */
+    public function getKey()
+    {
+        return $this->getAttribute($this->getKeyName());
+    }
+
+    /**
+     * Get the primary key name.
+     *
+     * @return string
+     */
+    public function getKeyName()
+    {
+        return $this->primaryKey;
     }
 
     /**
