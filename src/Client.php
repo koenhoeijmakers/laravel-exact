@@ -84,21 +84,6 @@ class Client implements ClientInterface
     }
 
     /**
-     * Send a HEAD request.
-     *
-     * @param string $uri
-     * @param array  $data
-     * @param array  $headers
-     * @return array
-     */
-    public function head(string $uri, array $data = [], array $headers = [])
-    {
-        return $this->request(
-            $this->buildRequest(__FUNCTION__, $uri, null, $data, $headers)
-        );
-    }
-
-    /**
      * Send a DELETE request.
      *
      * @param string $uri
