@@ -30,7 +30,7 @@ class ExactServiceProvider extends ServiceProvider
             return new ClientConfig($app['config']['exact']);
         });
 
-        $this->app->bind(Client::class, function ($app) {
+        $this->app->singleton(Client::class, function ($app) {
             return new Client(new HttpClient(), $app[ClientConfig::class]);
         });
     }
