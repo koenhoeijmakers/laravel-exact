@@ -3,15 +3,11 @@
 namespace KoenHoeijmakers\LaravelExact;
 
 use GuzzleHttp\ClientInterface as HttpInterface;
+use Illuminate\Support\Str;
 use KoenHoeijmakers\LaravelExact\Support\Fluent\ServiceTraverser;
 
 class Client implements ClientInterface
 {
-    /**
-     * Exact Client Version.
-     */
-    const VERSION = '0.1.0';
-
     /**
      * The client for talking to the api.
      *
@@ -72,6 +68,37 @@ class Client implements ClientInterface
         $this->clientConfig = $clientConfig;
 
         return $this;
+    }
+
+    /**
+     * Get the endpoint url (for the given uri).
+     *
+     * @param $uri
+     * @return string
+     */
+    public function getEndpointUrl($uri)
+    {
+        $config = $this->getClientConfig();
+
+        if (Str::contains($uri, '{division}')) {
+            $uri = str_replace('{division}', $config->getDivision(), $uri);
+        }
+
+        if (Str::endsWith($baseUrl = $config->getBaseUrl(), '/')) {
+            return $baseUrl . $uri;
+        }
+
+        return $baseUrl . '/' . $uri;
+    }
+
+    /**
+     * Get the client config.
+     *
+     * @return \KoenHoeijmakers\LaravelExact\ClientConfig
+     */
+    public function getClientConfig()
+    {
+        return $this->clientConfig;
     }
 
     /**
