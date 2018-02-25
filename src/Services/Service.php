@@ -88,7 +88,7 @@ abstract class Service implements JsonSerializable, Arrayable
     public function save()
     {
         if ($this->exists()) {
-            return $this->getClient()->put($this->getResourceUri(), $this->getAttributes());
+            return $this->getClient()->put($this->getPrimaryKeyAppendedResourceUri(), $this->getAttributes());
         }
 
         return $this->getClient()->post($this->getResourceUri(), $this->getAttributes());
@@ -108,6 +108,26 @@ abstract class Service implements JsonSerializable, Arrayable
         }
 
         return $this->fill($attributes)->save();
+    }
+
+    /**
+     * Delete the model.
+     *
+     * @return array
+     */
+    public function delete()
+    {
+        return $this->getClient()->delete($this->getPrimaryKeyAppendedResourceUri());
+    }
+
+    /**
+     * Get the resource uri with the guid (used for updating and deleting).
+     *
+     * @return string
+     */
+    protected function getPrimaryKeyAppendedResourceUri()
+    {
+        return $this->getResourceUri() . '(guid\'' . $this->getKey() . '\')';
     }
 
     /**
