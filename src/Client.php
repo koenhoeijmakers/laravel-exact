@@ -4,6 +4,7 @@ namespace KoenHoeijmakers\LaravelExact;
 
 use GuzzleHttp\ClientInterface as HttpInterface;
 use GuzzleHttp\Psr7\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use KoenHoeijmakers\LaravelExact\Exceptions\ClientException;
 use KoenHoeijmakers\LaravelExact\Support\Fluent\ServiceTraverser;
@@ -16,7 +17,7 @@ class Client implements ClientInterface
      *
      * @var \GuzzleHttp\ClientInterface
      */
-    protected $client;
+    protected $httpClient;
 
     /**
      * The client config.
@@ -33,42 +34,103 @@ class Client implements ClientInterface
      */
     public function __construct(HttpInterface $client, ClientConfig $clientConfig)
     {
-        $this->setClient($client);
+        $this->setHttpClient($client);
         $this->setClientConfig($clientConfig);
     }
 
     /**
      * Send a GET request.
      *
-     * @param       $uri
-     * @param array $query
-     * @param array $headers
+     * @param string $uri
+     * @param array  $query
+     * @param array  $headers
      * @return array
      */
-    public function get($uri, array $query = [], array $headers = [])
+    public function get(string $uri, array $query = [], array $headers = [])
     {
-        return $this->sendRequest(
+        return $this->request(
             $this->buildRequest(__FUNCTION__, $uri, null, $query, $headers)
         );
     }
 
     /**
-     * Send the request.
+     * Send a POST request.
+     *
+     * @param string $uri
+     * @param array  $data
+     * @param array  $headers
+     * @return array
+     */
+    public function post(string $uri, array $data = [], array $headers = [])
+    {
+        return $this->request(
+            $this->buildRequest(__FUNCTION__, $uri, null, $data, $headers)
+        );
+    }
+
+    /**
+     * Send a PUT request.
+     *
+     * @param string $uri
+     * @param array  $data
+     * @param array  $headers
+     * @return array
+     */
+    public function put(string $uri, array $data = [], array $headers = [])
+    {
+        return $this->request(
+            $this->buildRequest(__FUNCTION__, $uri, null, $data, $headers)
+        );
+    }
+
+    /**
+     * Send a HEAD request.
+     *
+     * @param string $uri
+     * @param array  $data
+     * @param array  $headers
+     * @return array
+     */
+    public function head(string $uri, array $data = [], array $headers = [])
+    {
+        return $this->request(
+            $this->buildRequest(__FUNCTION__, $uri, null, $data, $headers)
+        );
+    }
+
+    /**
+     * Send a DELETE request.
+     *
+     * @param string $uri
+     * @param array  $headers
+     * @return array
+     */
+    public function delete(string $uri, array $headers = [])
+    {
+        return $this->request(
+            $this->buildRequest(__FUNCTION__, $uri, null, [], $headers)
+        );
+    }
+
+    /**
+     * Send the request and get a parsed response.
      *
      * @param \GuzzleHttp\Psr7\Request $request
      * @param bool                     $retry
      * @return array
      * @throws \KoenHoeijmakers\LaravelExact\Exceptions\ClientException
      */
-    protected function sendRequest(Request $request, $retry = true)
+    protected function request(Request $request, $retry = true)
     {
         try {
             return $this->parseResponse(
-                $this->getClient()->send($request)
+                $this->getHttpClient()->send($request)
             );
         } catch (\Exception $exception) {
-            if ($retry && $exception->getCode() === 401 && $this->retrieveAccessToken()) {
-                $this->sendRequest($request, false);
+            if ($retry && $exception->getCode() === 401) {
+                $this->retrieveAccessToken();
+
+                $this->request($request, false);
             }
 
             throw new ClientException($exception->getMessage());
@@ -83,7 +145,17 @@ class Client implements ClientInterface
      */
     protected function parseResponse(ResponseInterface $response)
     {
-        return [];
+        $data = json_decode($response->getBody()->getContents(), true);
+
+        if (array_key_exists('d', $data)) {
+            if (array_key_exists('results', $data['d'])) {
+                return $data['d']['results'];
+            }
+
+            return $data['d'];
+        }
+
+        return $data;
     }
 
     /**
@@ -116,15 +188,26 @@ class Client implements ClientInterface
     /**
      * Retrieve the access token.
      *
-     * @return bool
+     * @return string
      */
     public function retrieveAccessToken()
     {
-        // scaffolding
+        $config = $this->getClientConfig();
 
-        $this->getClientConfig()->setAccessToken($token = '');
+        $params = [
+            'form_params' => [
+                'refresh_token' => $config->getRefreshToken(),
+                'grant_type'    => 'refresh_token',
+                'client_id'     => $config->getClientId(),
+                'client_secret' => $config->getClientSecret(),
+            ],
+        ];
 
-        return true;
+        $config->setAccessToken(
+            $token = Arr::get($this->post($config->getTokenUri(), $params), 'access_token')
+        );
+
+        return $token;
     }
 
     /**
@@ -147,22 +230,22 @@ class Client implements ClientInterface
     /**
      * Get the client.
      *
-     * @return \GuzzleHttp\ClientInterface
+     * @return \GuzzleHttp\ClientInterface|\GuzzleHttp\Client
      */
-    public function getClient()
+    public function getHttpClient()
     {
-        return $this->client;
+        return $this->httpClient;
     }
 
     /**
      * Set the client.
      *
-     * @param \GuzzleHttp\ClientInterface $client
+     * @param \GuzzleHttp\ClientInterface $httpClient
      * @return $this
      */
-    public function setClient(HttpInterface $client)
+    public function setHttpClient(HttpInterface $httpClient)
     {
-        $this->client = $client;
+        $this->httpClient = $httpClient;
 
         return $this;
     }
