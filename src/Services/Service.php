@@ -8,6 +8,7 @@ use JsonSerializable;
 use KoenHoeijmakers\LaravelExact\Client;
 use KoenHoeijmakers\LaravelExact\Exactoquent\Builder;
 use KoenHoeijmakers\LaravelExact\Exceptions\ExactoquentException;
+use KoenHoeijmakers\LaravelExact\Exceptions\ServiceException;
 
 abstract class Service implements JsonSerializable, Arrayable
 {
@@ -82,21 +83,30 @@ abstract class Service implements JsonSerializable, Arrayable
     /**
      * Save the model to exact.
      *
-     * @return bool
+     * @return array
      */
     public function save()
     {
-        return true;
+        if ($this->exists()) {
+            return $this->getClient()->put($this->getResourceUri(), $this->getAttributes());
+        }
+
+        return $this->getClient()->post($this->getResourceUri(), $this->getAttributes());
     }
 
     /**
      * Update the current model.
      *
      * @param array $attributes
-     * @return bool
+     * @return array
+     * @throws \KoenHoeijmakers\LaravelExact\Exceptions\ServiceException
      */
     public function update($attributes = [])
     {
+        if (!$this->exists()) {
+            throw new ServiceException('You can\'t update a model that doesn\'t exist.');
+        }
+
         return $this->fill($attributes)->save();
     }
 
@@ -433,6 +443,21 @@ abstract class Service implements JsonSerializable, Arrayable
      */
     public function get(array $query = [], array $headers = [])
     {
-        return $this->getClient()->get($this->getResourceUri(), $query, $headers);
+        return $this->parseResultsIntoServiceObjects(
+            $this->getClient()->get($this->getResourceUri(), $query, $headers)
+        );
+    }
+
+    /**
+     * Parse the results into an array of objects.
+     *
+     * @param array $data
+     * @return array
+     */
+    protected function parseResultsIntoServiceObjects(array $data = [])
+    {
+        return array_map(function ($attributes) {
+            return $this->getNewInstance($attributes);
+        }, $data);
     }
 }
