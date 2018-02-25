@@ -5,7 +5,9 @@ namespace KoenHoeijmakers\LaravelExact\Services;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Arr;
 use JsonSerializable;
-use KoenHoeijmakers\LaravelExact\ClientInterface;
+use KoenHoeijmakers\LaravelExact\Client;
+use KoenHoeijmakers\LaravelExact\Exactoquent\Builder;
+use KoenHoeijmakers\LaravelExact\Exceptions\ExactoquentException;
 
 abstract class Service implements JsonSerializable, Arrayable
 {
@@ -19,7 +21,7 @@ abstract class Service implements JsonSerializable, Arrayable
     /**
      * The exact client.
      *
-     * @var \KoenHoeijmakers\LaravelExact\ClientInterface
+     * @var \KoenHoeijmakers\LaravelExact\Client
      */
     protected $client;
 
@@ -54,10 +56,10 @@ abstract class Service implements JsonSerializable, Arrayable
     /**
      * Model constructor.
      *
-     * @param array                                         $attributes
-     * @param \KoenHoeijmakers\LaravelExact\ClientInterface $client
+     * @param array                                $attributes
+     * @param \KoenHoeijmakers\LaravelExact\Client $client
      */
-    public function __construct(ClientInterface $client, array $attributes = [])
+    public function __construct(Client $client, array $attributes = [])
     {
         $this->fillableFromArray($attributes);
 
@@ -252,6 +254,17 @@ abstract class Service implements JsonSerializable, Arrayable
     }
 
     /**
+     * Get a new instance.
+     *
+     * @param array $attributes
+     * @return static
+     */
+    public function getNewInstance(array $attributes = [])
+    {
+        return new static($this->getClient(), $attributes);
+    }
+
+    /**
      * Get all of the model's attributes.
      *
      * @return array
@@ -320,7 +333,7 @@ abstract class Service implements JsonSerializable, Arrayable
     /**
      * Get the client.
      *
-     * @return \KoenHoeijmakers\LaravelExact\ClientInterface
+     * @return \KoenHoeijmakers\LaravelExact\Client
      */
     public function getClient()
     {
@@ -365,5 +378,61 @@ abstract class Service implements JsonSerializable, Arrayable
     public function toArray()
     {
         return $this->getCastedAttributes();
+    }
+
+    /**
+     * Send a search query to exact.
+     *
+     * @param array    $wheres
+     * @param int|null $top
+     * @return array
+     * @throws \KoenHoeijmakers\LaravelExact\Exceptions\ExactoquentException
+     */
+    public function search(array $wheres = [], $top = null)
+    {
+        $builder = $this->newBuilder()->top($top);
+
+        foreach ($wheres as $where) {
+            if (count($where) !== 3) {
+                throw new ExactoquentException('Where is incorrectly formed');
+            }
+
+            $builder->where(...$where);
+        }
+
+        return $builder->get();
+    }
+
+    /**
+     * Find one.
+     *
+     * @param $value
+     * @return mixed
+     */
+    public function find($value)
+    {
+        return $this->newBuilder()->find($value);
+    }
+
+    /**
+     * Get a new builder instance.
+     *
+     * @return \KoenHoeijmakers\LaravelExact\Exactoquent\Builder
+     */
+    public function newBuilder()
+    {
+        return new Builder(new static($this->getClient()));
+    }
+
+    /**
+     * Pass through for GET requests.
+     *
+     * @param array $query
+     * @param array $headers
+     * @return array
+     */
+    public function get(array $query = [], array $headers = [])
+    {
+        return $this->getClient()->get($this->getResourceUri(), $query, $headers);
     }
 }
