@@ -42,6 +42,13 @@ class ClientConfig
     protected $division;
 
     /**
+     * The base url.
+     *
+     * @var string
+     */
+    protected $baseUrl = 'https://start.exactonline.nl/api/v1/';
+
+    /**
      * ClientConfig constructor.
      *
      * @param array $payload
@@ -55,13 +62,22 @@ class ClientConfig
      * Set the config by the given payload.
      *
      * @param array $payload
+     * @return void
      */
     protected function setConfigFromPayload(array $payload = [])
     {
         foreach ($payload as $key => $value) {
-            if (method_exists($this, $method = $this->getSetterMethodFromKey($key))) {
-                $this->{$method}($value);
+            if (empty($value)) {
+                continue;
             }
+
+            $method = $this->getSetterMethodFromKey($key);
+
+            if (!method_exists($this, $method)) {
+                continue;
+            }
+
+            $this->{$method}($value);
         }
     }
 
@@ -187,6 +203,29 @@ class ClientConfig
     public function setDivision($division)
     {
         $this->division = $division;
+
+        return $this;
+    }
+
+    /**
+     * Get the base url.
+     *
+     * @return string
+     */
+    public function getBaseUrl(): string
+    {
+        return $this->baseUrl;
+    }
+
+    /**
+     * Set the base url.
+     *
+     * @param string $baseUrl
+     * @return $this
+     */
+    public function setBaseUrl(string $baseUrl)
+    {
+        $this->baseUrl = $baseUrl;
 
         return $this;
     }

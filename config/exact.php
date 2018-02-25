@@ -5,5 +5,5 @@ return [
     'client_secret' => env('EXACT_CLIENT_SECRET'),  // Your client secret.
     'division'      => env('EXACT_DIVISION'),       // Your division.
     'refresh_token' => env('EXACT_REFRESH_TOKEN'),  // Your refresh token.
-    'base_url'      => env('EXACT_BASE_URL', 'https://start.exactonline.nl'),
+    'base_url'      => env('EXACT_BASE_URL', 'https://start.exactonline.nl/api/v1'),
 ];
