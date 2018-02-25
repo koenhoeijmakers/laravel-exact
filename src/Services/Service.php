@@ -7,8 +7,6 @@ use Illuminate\Support\Arr;
 use JsonSerializable;
 use KoenHoeijmakers\LaravelExact\Client;
 use KoenHoeijmakers\LaravelExact\Exactoquent\Builder;
-use KoenHoeijmakers\LaravelExact\Exceptions\ExactoquentException;
-use KoenHoeijmakers\LaravelExact\Exceptions\ServiceException;
 
 abstract class Service implements JsonSerializable, Arrayable
 {
@@ -55,14 +53,14 @@ abstract class Service implements JsonSerializable, Arrayable
     protected $primaryKey = 'ID';
 
     /**
-     * Model constructor.
+     * Service constructor.
      *
      * @param array                                $attributes
      * @param \KoenHoeijmakers\LaravelExact\Client $client
      */
     public function __construct(Client $client, array $attributes = [])
     {
-        $this->fillableFromArray($attributes);
+        $this->fill($attributes);
 
         $this->client = $client;
     }
@@ -83,41 +81,62 @@ abstract class Service implements JsonSerializable, Arrayable
     /**
      * Save the model to exact.
      *
-     * @return array
+     * @return \KoenHoeijmakers\LaravelExact\Services\Service
      */
     public function save()
     {
         if ($this->exists()) {
-            return $this->getClient()->put($this->getPrimaryKeyAppendedResourceUri(), $this->getAttributes());
+            return $this->saveExisting();
         }
 
-        return $this->getClient()->post($this->getResourceUri(), $this->getAttributes());
+        return $this->saveNonExisting();
+    }
+
+    /**
+     * Save an existing service.
+     *
+     * @return \KoenHoeijmakers\LaravelExact\Services\Service
+     */
+    protected function saveExisting()
+    {
+        return $this->fill(
+            $this->getClient()->put($this->getPrimaryKeyAppendedResourceUri(), $this->getAttributes())
+        );
+    }
+
+    /**
+     * Save a non-existing service.
+     *
+     * @return \KoenHoeijmakers\LaravelExact\Services\Service
+     */
+    protected function saveNonExisting()
+    {
+        return $this->fill(
+            $this->getClient()->post($this->getResourceUri(), $this->getAttributes())
+        );
     }
 
     /**
      * Update the current model.
      *
      * @param array $attributes
-     * @return array
-     * @throws \KoenHoeijmakers\LaravelExact\Exceptions\ServiceException
+     * @return \KoenHoeijmakers\LaravelExact\Services\Service
      */
     public function update($attributes = [])
     {
-        if (!$this->exists()) {
-            throw new ServiceException('You can\'t update a model that doesn\'t exist.');
-        }
-
         return $this->fill($attributes)->save();
     }
 
     /**
      * Delete the model.
      *
-     * @return array
+     * @return \KoenHoeijmakers\LaravelExact\Services\Service
      */
     public function delete()
     {
-        return $this->getClient()->delete($this->getPrimaryKeyAppendedResourceUri());
+        $this->getClient()->delete($this->getPrimaryKeyAppendedResourceUri());
+
+        return $this;
     }
 
     /**
@@ -416,17 +435,12 @@ abstract class Service implements JsonSerializable, Arrayable
      * @param array    $wheres
      * @param int|null $top
      * @return array
-     * @throws \KoenHoeijmakers\LaravelExact\Exceptions\ExactoquentException
      */
     public function search(array $wheres = [], $top = null)
     {
         $builder = $this->newBuilder()->top($top);
 
         foreach ($wheres as $where) {
-            if (count($where) !== 3) {
-                throw new ExactoquentException('Where is incorrectly formed');
-            }
-
             $builder->where(...$where);
         }
 
