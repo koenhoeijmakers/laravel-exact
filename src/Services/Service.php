@@ -49,7 +49,7 @@ abstract class Service implements JsonSerializable, Arrayable
      *
      * @var string
      */
-    protected $primaryKey;
+    protected $primaryKey = 'ID';
 
     /**
      * Model constructor.
