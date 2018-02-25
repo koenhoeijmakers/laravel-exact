@@ -180,12 +180,10 @@ class Client implements ClientInterface
         $config = $this->getClientConfig();
 
         $params = [
-            'form_params' => [
-                'refresh_token' => $config->getRefreshToken(),
-                'grant_type'    => 'refresh_token',
-                'client_id'     => $config->getClientId(),
-                'client_secret' => $config->getClientSecret(),
-            ],
+            'refresh_token' => $config->getRefreshToken(),
+            'grant_type'    => 'refresh_token',
+            'client_id'     => $config->getClientId(),
+            'client_secret' => $config->getClientSecret(),
         ];
 
         $config->setAccessToken(
