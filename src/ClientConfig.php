@@ -49,6 +49,13 @@ class ClientConfig
     protected $baseUrl = 'https://start.exactonline.nl';
 
     /**
+     * The OAuth2 token uri.
+     *
+     * @var string
+     */
+    protected $tokenUri = '/api/oauth2/token';
+
+    /**
      * ClientConfig constructor.
      *
      * @param array $payload
@@ -228,5 +235,15 @@ class ClientConfig
         $this->baseUrl = $baseUrl;
 
         return $this;
+    }
+
+    /**
+     * Get the token uri.
+     *
+     * @return string
+     */
+    public function getTokenUri(): string
+    {
+        return $this->tokenUri;
     }
 }
