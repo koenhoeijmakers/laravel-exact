@@ -16,7 +16,9 @@ class ExactServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        $this->publishes([
+            __DIR__ . '/../config/exact.php' => config_path('exact.php')
+        ]);
     }
 
     /**
@@ -26,6 +28,10 @@ class ExactServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->mergeConfigFrom(
+            __DIR__ . '/../config/exact.php', 'exact'
+        );
+
         $this->app->singleton(ClientConfig::class, function ($app) {
             return new ClientConfig($app['config']['exact']);
         });
