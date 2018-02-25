@@ -3,8 +3,11 @@
 namespace KoenHoeijmakers\LaravelExact;
 
 use GuzzleHttp\ClientInterface as HttpInterface;
+use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Str;
+use KoenHoeijmakers\LaravelExact\Exceptions\ClientException;
 use KoenHoeijmakers\LaravelExact\Support\Fluent\ServiceTraverser;
+use Psr\Http\Message\ResponseInterface;
 
 class Client implements ClientInterface
 {
@@ -32,6 +35,113 @@ class Client implements ClientInterface
     {
         $this->setClient($client);
         $this->setClientConfig($clientConfig);
+    }
+
+    /**
+     * Send a GET request.
+     *
+     * @param       $uri
+     * @param array $query
+     * @param array $headers
+     * @return array
+     */
+    public function get($uri, array $query = [], array $headers = [])
+    {
+        return $this->sendRequest(
+            $this->buildRequest(__FUNCTION__, $uri, null, $query, $headers)
+        );
+    }
+
+    /**
+     * Send the request.
+     *
+     * @param \GuzzleHttp\Psr7\Request $request
+     * @param bool                     $retry
+     * @return array
+     * @throws \KoenHoeijmakers\LaravelExact\Exceptions\ClientException
+     */
+    protected function sendRequest(Request $request, $retry = true)
+    {
+        try {
+            return $this->parseResponse(
+                $this->getClient()->send($request)
+            );
+        } catch (\Exception $exception) {
+            if ($retry && $exception->getCode() === 401 && $this->retrieveAccessToken()) {
+                $this->sendRequest($request, false);
+            }
+
+            throw new ClientException($exception->getMessage());
+        }
+    }
+
+    /**
+     * Parse the response.
+     *
+     * @param \Psr\Http\Message\ResponseInterface $response
+     * @return array
+     */
+    protected function parseResponse(ResponseInterface $response)
+    {
+        return [];
+    }
+
+    /**
+     * Build a request.
+     *
+     * @param            $method
+     * @param            $uri
+     * @param array|null $data
+     * @param array      $query
+     * @param array      $headers
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    protected function buildRequest($method, $uri, array $data = null, array $query = [], array $headers = [])
+    {
+        $headers = array_merge($headers, [
+            'Accept'         => 'application/json',
+            'Content-Type'   => 'application/json',
+            'Authentication' => 'Bearer ' . $this->getClientConfig()->getAccessToken(),
+        ]);
+
+        $uri = $this->getEndpointUrl($uri);
+
+        if (!empty($query)) {
+            $uri .= '?' . http_build_query($query);
+        }
+
+        return new Request($method, $uri, $headers, $data);
+    }
+
+    /**
+     * Retrieve the access token.
+     *
+     * @return bool
+     */
+    public function retrieveAccessToken()
+    {
+        // scaffolding
+
+        $this->getClientConfig()->setAccessToken($token = '');
+
+        return true;
+    }
+
+    /**
+     * Get the endpoint url (for the given uri).
+     *
+     * @param $uri
+     * @return string
+     */
+    public function getEndpointUrl($uri)
+    {
+        $config = $this->getClientConfig();
+
+        if (Str::contains($uri, '{division}')) {
+            $uri = str_replace('{division}', $config->getDivision(), $uri);
+        }
+
+        return $config->getBaseUrl() . $uri;
     }
 
     /**
@@ -71,27 +181,6 @@ class Client implements ClientInterface
     }
 
     /**
-     * Get the endpoint url (for the given uri).
-     *
-     * @param $uri
-     * @return string
-     */
-    public function getEndpointUrl($uri)
-    {
-        $config = $this->getClientConfig();
-
-        if (Str::contains($uri, '{division}')) {
-            $uri = str_replace('{division}', $config->getDivision(), $uri);
-        }
-
-        if (Str::endsWith($baseUrl = $config->getBaseUrl(), '/')) {
-            return $baseUrl . $uri;
-        }
-
-        return $baseUrl . '/' . $uri;
-    }
-
-    /**
      * Get the client config.
      *
      * @return \KoenHoeijmakers\LaravelExact\ClientConfig
@@ -119,7 +208,7 @@ class Client implements ClientInterface
      * @param array $arguments
      * @return \KoenHoeijmakers\LaravelExact\Services\Service|\KoenHoeijmakers\LaravelExact\Support\Fluent\ServiceTraverser
      */
-    public function __call($name, array $arguments =[])
+    public function __call($name, array $arguments = [])
     {
         return $this->getServiceTraverser()->resolve($name);
     }

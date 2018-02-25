@@ -46,7 +46,7 @@ class ClientConfig
      *
      * @var string
      */
-    protected $baseUrl = 'https://start.exactonline.nl/api/v1/';
+    protected $baseUrl = 'https://start.exactonline.nl';
 
     /**
      * ClientConfig constructor.
