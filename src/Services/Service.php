@@ -71,7 +71,7 @@ abstract class Service implements JsonSerializable, Arrayable
      * @param array $attributes
      * @return $this
      */
-    public function fill($attributes = [])
+    public function fill(array $attributes = [])
     {
         $this->fillableFromArray($attributes);
 
@@ -86,33 +86,13 @@ abstract class Service implements JsonSerializable, Arrayable
     public function save()
     {
         if ($this->exists()) {
-            return $this->saveExisting();
+            return $this->fill(
+                $this->getClient()->put($this->getPrimaryKeyAppendedResourceUri(), $this->getCastedAttributes())
+            );
         }
 
-        return $this->saveNonExisting();
-    }
-
-    /**
-     * Save an existing service.
-     *
-     * @return \KoenHoeijmakers\LaravelExact\Services\Service
-     */
-    protected function saveExisting()
-    {
         return $this->fill(
-            $this->getClient()->put($this->getPrimaryKeyAppendedResourceUri(), $this->getAttributes())
-        );
-    }
-
-    /**
-     * Save a non-existing service.
-     *
-     * @return \KoenHoeijmakers\LaravelExact\Services\Service
-     */
-    protected function saveNonExisting()
-    {
-        return $this->fill(
-            $this->getClient()->post($this->getResourceUri(), $this->getAttributes())
+            $this->getClient()->post($this->getResourceUri(), $this->getCastedAttributes())
         );
     }
 
