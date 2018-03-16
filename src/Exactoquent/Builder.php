@@ -151,8 +151,10 @@ class Builder
      */
     protected function fire()
     {
-        $result = $this->getService()->get(
-            $this->prepareQuery()
+        $service = $this->getService();
+
+        $result = $service->getClient()->get(
+            $service->getResourceUri(), $this->prepareQuery()
         );
 
         if ($this->top === 1) {

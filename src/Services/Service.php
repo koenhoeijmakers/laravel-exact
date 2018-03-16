@@ -449,20 +449,6 @@ abstract class Service implements JsonSerializable, Arrayable
     }
 
     /**
-     * Pass through for GET requests.
-     *
-     * @param array $query
-     * @param array $headers
-     * @return array
-     */
-    public function get(array $query = [], array $headers = [])
-    {
-        return $this->parseResultsIntoServiceObjects(
-            $this->getClient()->get($this->getResourceUri(), $query, $headers)
-        );
-    }
-
-    /**
      * Parse the results into an array of objects.
      *
      * @param array $data
