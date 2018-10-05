@@ -1,4 +1,4 @@
-# Laravel Exact
+# Laravel Exact (Work in progress)
 An ExactOnline API client written for Laravel.
 
 # Usage
