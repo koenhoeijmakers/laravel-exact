@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace KoenHoeijmakers\LaravelExact\Services;
 
 use Illuminate\Contracts\Support\Arrayable;
@@ -55,8 +57,8 @@ abstract class Service implements JsonSerializable, Arrayable
     /**
      * Service constructor.
      *
-     * @param array                                $attributes
-     * @param \KoenHoeijmakers\LaravelExact\Client $client
+     * @param  array                                $attributes
+     * @param  \KoenHoeijmakers\LaravelExact\Client $client
      */
     public function __construct(Client $client, array $attributes = [])
     {
@@ -68,7 +70,7 @@ abstract class Service implements JsonSerializable, Arrayable
     /**
      * Fill the model with the given attributes.
      *
-     * @param array $attributes
+     * @param  array $attributes
      * @return $this
      */
     public function fill(array $attributes = [])
@@ -99,7 +101,7 @@ abstract class Service implements JsonSerializable, Arrayable
     /**
      * Update the current model.
      *
-     * @param array $attributes
+     * @param  array $attributes
      * @return \KoenHoeijmakers\LaravelExact\Services\Service
      */
     public function update($attributes = [])
@@ -153,7 +155,7 @@ abstract class Service implements JsonSerializable, Arrayable
     /**
      * Fill the given attributes, if possible.
      *
-     * @param array $attributes
+     * @param  array $attributes
      */
     protected function fillableFromArray($attributes = [])
     {
@@ -171,7 +173,7 @@ abstract class Service implements JsonSerializable, Arrayable
      */
     protected function hasFillable()
     {
-        return !empty($this->getFillable());
+        return ! empty($this->getFillable());
     }
 
     /**
@@ -181,7 +183,7 @@ abstract class Service implements JsonSerializable, Arrayable
      */
     public function exists()
     {
-        return !is_null($this->getKey());
+        return ! is_null($this->getKey());
     }
 
     /**
@@ -218,22 +220,22 @@ abstract class Service implements JsonSerializable, Arrayable
             case 'bool':
             case 'boolean':
                 return (bool) $value;
-                break;
+            break;
 
             case 'int':
             case 'integer':
                 return (int) $value;
-                break;
+            break;
 
             case 'float':
             case 'double':
             case 'real':
                 return (float) $value;
-                break;
+            break;
 
             case 'string':
                 return (string) $value;
-                break;
+            break;
         }
 
         return $value;
@@ -259,7 +261,7 @@ abstract class Service implements JsonSerializable, Arrayable
     {
         $attributes = $this->getAttributes();
 
-        if (!$this->hasCasts()) {
+        if (! $this->hasCasts()) {
             return $attributes;
         }
 
@@ -279,13 +281,13 @@ abstract class Service implements JsonSerializable, Arrayable
      */
     protected function hasCasts()
     {
-        return !empty($this->getCasts());
+        return ! empty($this->getCasts());
     }
 
     /**
      * Get a new instance.
      *
-     * @param array $attributes
+     * @param  array $attributes
      * @return static
      */
     public function getNewInstance(array $attributes = [])
@@ -412,8 +414,8 @@ abstract class Service implements JsonSerializable, Arrayable
     /**
      * Send a search query to exact.
      *
-     * @param array    $wheres
-     * @param int|null $top
+     * @param  array    $wheres
+     * @param  int|null $top
      * @return array
      */
     public function search(array $wheres = [], $top = null)
@@ -451,7 +453,7 @@ abstract class Service implements JsonSerializable, Arrayable
     /**
      * Parse the results into an array of objects.
      *
-     * @param array $data
+     * @param  array $data
      * @return array
      */
     protected function parseResultsIntoServiceObjects(array $data = [])

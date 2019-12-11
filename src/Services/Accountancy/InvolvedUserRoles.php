@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace KoenHoeijmakers\LaravelExact\Services\Accountancy;
 
 use KoenHoeijmakers\LaravelExact\Services\Service;

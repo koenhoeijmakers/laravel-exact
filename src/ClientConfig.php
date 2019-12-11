@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace KoenHoeijmakers\LaravelExact;
 
 use Illuminate\Support\Str;
@@ -58,7 +60,7 @@ class ClientConfig
     /**
      * ClientConfig constructor.
      *
-     * @param array $payload
+     * @param  array $payload
      */
     public function __construct(array $payload = [])
     {
@@ -68,7 +70,7 @@ class ClientConfig
     /**
      * Set the config by the given payload.
      *
-     * @param array $payload
+     * @param  array $payload
      * @return void
      */
     protected function setConfigFromPayload(array $payload = [])
@@ -80,7 +82,7 @@ class ClientConfig
 
             $method = $this->getSetterMethodFromKey($key);
 
-            if (!method_exists($this, $method)) {
+            if (! method_exists($this, $method)) {
                 continue;
             }
 
@@ -91,10 +93,10 @@ class ClientConfig
     /**
      * Get the setter method for the given key.
      *
-     * @param $key
+     * @param string $key
      * @return string
      */
-    protected function getSetterMethodFromKey($key)
+    protected function getSetterMethodFromKey(string $key)
     {
         return 'set' . Str::studly($key);
     }
@@ -112,7 +114,7 @@ class ClientConfig
     /**
      * Set the client secret.
      *
-     * @param mixed $clientSecret
+     * @param  mixed $clientSecret
      * @return $this
      */
     public function setClientSecret($clientSecret)
@@ -135,7 +137,7 @@ class ClientConfig
     /**
      * Set the refresh token.
      *
-     * @param mixed $refreshToken
+     * @param  mixed $refreshToken
      * @return $this
      */
     public function setRefreshToken($refreshToken)
@@ -158,7 +160,7 @@ class ClientConfig
     /**
      * Set the access token.
      *
-     * @param mixed $accessToken
+     * @param  mixed $accessToken
      * @return $this
      */
     public function setAccessToken($accessToken)
@@ -181,7 +183,7 @@ class ClientConfig
     /**
      * Set the client id.
      *
-     * @param mixed $clientId
+     * @param  mixed $clientId
      * @return $this
      */
     public function setClientId($clientId)
@@ -204,7 +206,7 @@ class ClientConfig
     /**
      * Set the division.
      *
-     * @param mixed $division
+     * @param  mixed $division
      * @return $this;
      */
     public function setDivision($division)
@@ -214,23 +216,12 @@ class ClientConfig
         return $this;
     }
 
-    /**
-     * Get the base url.
-     *
-     * @return string
-     */
     public function getBaseUrl(): string
     {
         return $this->baseUrl;
     }
 
-    /**
-     * Set the base url.
-     *
-     * @param string $baseUrl
-     * @return $this
-     */
-    public function setBaseUrl(string $baseUrl)
+    public function setBaseUrl(string $baseUrl): ClientConfig
     {
         $this->baseUrl = $baseUrl;
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace KoenHoeijmakers\LaravelExact\Exactoquent;
 
 use Illuminate\Support\Arr;
@@ -45,7 +47,7 @@ class Builder
     /**
      * Builder constructor.
      *
-     * @param \KoenHoeijmakers\LaravelExact\Services\Service $service
+     * @param  \KoenHoeijmakers\LaravelExact\Services\Service $service
      */
     public function __construct(Service $service)
     {
@@ -65,8 +67,8 @@ class Builder
     /**
      * Find a single model by its primary key.
      *
-     * @param             $value
-     * @param string|null $key
+     * @param              $value
+     * @param  string|null $key
      * @return array
      */
     public function find($value, $key = null)
@@ -77,9 +79,9 @@ class Builder
     /**
      * Add a new where.
      *
-     * @param string $field
-     * @param string $operator
-     * @param mixed  $value
+     * @param  string $field
+     * @param  string $operator
+     * @param  mixed  $value
      * @return $this
      */
     public function where(string $field, string $operator, $value)
@@ -92,7 +94,7 @@ class Builder
     /**
      * The select.
      *
-     * @param array $values
+     * @param  array $values
      * @return $this
      */
     public function select(array $values = [])
@@ -105,7 +107,7 @@ class Builder
     /**
      * Top it off.
      *
-     * @param int $top
+     * @param  int $top
      * @return $this
      */
     public function top(int $top)
@@ -116,7 +118,7 @@ class Builder
     }
 
     /**
-     * @param array $attributes
+     * @param  array $attributes
      * @return \KoenHoeijmakers\LaravelExact\Services\Service
      */
     protected function newService(array $attributes = [])
@@ -173,17 +175,17 @@ class Builder
     {
         $params = [];
 
-        if (!is_null($top = $this->top)) {
+        if (! is_null($top = $this->top)) {
             $params['$top'] = $top;
         }
 
-        if (!empty($wheres = $this->wheres)) {
+        if (! empty($wheres = $this->wheres)) {
             $params['$filter'] = implode(',', array_map(function ($where) {
                 return implode(' ', $where);
             }, $wheres));
         }
 
-        if (!is_null($expansions = $this->expansions)) {
+        if (! is_null($expansions = $this->expansions)) {
             $params['$expansion'] = implode(',', $expansions);
         }
 

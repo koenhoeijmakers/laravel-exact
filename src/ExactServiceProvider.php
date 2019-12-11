@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use GuzzleHttp\Client as HttpClient;
+use Illuminate\Contracts\Config\Repository;
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\ServiceProvider;
 use KoenHoeijmakers\LaravelExact\Client;
 use KoenHoeijmakers\LaravelExact\ClientConfig;
@@ -17,7 +21,7 @@ class ExactServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__ . '/../config/exact.php' => config_path('exact.php')
+            __DIR__ . '/../config/exact.php' => config_path('exact.php'),
         ]);
     }
 
@@ -32,12 +36,15 @@ class ExactServiceProvider extends ServiceProvider
             __DIR__ . '/../config/exact.php', 'exact'
         );
 
-        $this->app->singleton(ClientConfig::class, function ($app) {
-            return new ClientConfig($app['config']['exact']);
+        /** @var Repository $config */
+        $config = $this->app->make(Repository::class);
+
+        $this->app->singleton(ClientConfig::class, function () use ($config) {
+            return new ClientConfig($config->get('exact'));
         });
 
-        $this->app->singleton(Client::class, function ($app) {
-            return new Client(new HttpClient(), $app[ClientConfig::class]);
+        $this->app->singleton(Client::class, function (Container $container) {
+            return new Client(new HttpClient(), $container->make(ClientConfig::class));
         });
     }
 }

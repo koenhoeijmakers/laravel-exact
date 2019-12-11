@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace KoenHoeijmakers\LaravelExact;
 
 use GuzzleHttp\ClientInterface as HttpInterface;
@@ -29,8 +31,8 @@ class Client implements ClientInterface
     /**
      * Exact constructor.
      *
-     * @param \GuzzleHttp\ClientInterface                $client
-     * @param \KoenHoeijmakers\LaravelExact\ClientConfig $clientConfig
+     * @param  \GuzzleHttp\ClientInterface                $client
+     * @param  \KoenHoeijmakers\LaravelExact\ClientConfig $clientConfig
      */
     public function __construct(HttpInterface $client, ClientConfig $clientConfig)
     {
@@ -41,9 +43,9 @@ class Client implements ClientInterface
     /**
      * Send a GET request.
      *
-     * @param string $uri
-     * @param array  $query
-     * @param array  $headers
+     * @param  string $uri
+     * @param  array  $query
+     * @param  array  $headers
      * @return array
      */
     public function get(string $uri, array $query = [], array $headers = [])
@@ -56,9 +58,9 @@ class Client implements ClientInterface
     /**
      * Send a POST request.
      *
-     * @param string $uri
-     * @param array  $data
-     * @param array  $headers
+     * @param  string $uri
+     * @param  array  $data
+     * @param  array  $headers
      * @return array
      */
     public function post(string $uri, array $data = [], array $headers = [])
@@ -71,9 +73,9 @@ class Client implements ClientInterface
     /**
      * Send a PUT request.
      *
-     * @param string $uri
-     * @param array  $data
-     * @param array  $headers
+     * @param  string $uri
+     * @param  array  $data
+     * @param  array  $headers
      * @return array
      */
     public function put(string $uri, array $data = [], array $headers = [])
@@ -86,8 +88,8 @@ class Client implements ClientInterface
     /**
      * Send a DELETE request.
      *
-     * @param string $uri
-     * @param array  $headers
+     * @param  string $uri
+     * @param  array  $headers
      * @return array
      */
     public function delete(string $uri, array $headers = [])
@@ -100,8 +102,8 @@ class Client implements ClientInterface
     /**
      * Send the request and get a parsed response.
      *
-     * @param \GuzzleHttp\Psr7\Request $request
-     * @param bool                     $retry
+     * @param  \GuzzleHttp\Psr7\Request $request
+     * @param  bool                     $retry
      * @return array
      * @throws \KoenHoeijmakers\LaravelExact\Exceptions\ClientException
      */
@@ -125,7 +127,7 @@ class Client implements ClientInterface
     /**
      * Parse the response.
      *
-     * @param \Psr\Http\Message\ResponseInterface $response
+     * @param  \Psr\Http\Message\ResponseInterface $response
      * @return array
      */
     protected function parseResponse(ResponseInterface $response)
@@ -146,11 +148,11 @@ class Client implements ClientInterface
     /**
      * Build a request.
      *
-     * @param            $method
-     * @param            $uri
-     * @param array|null $data
-     * @param array      $query
-     * @param array      $headers
+     * @param             $method
+     * @param             $uri
+     * @param  array|null $data
+     * @param  array      $query
+     * @param  array      $headers
      * @return \GuzzleHttp\Psr7\Request
      */
     protected function buildRequest($method, $uri, array $data = null, array $query = [], array $headers = [])
@@ -163,7 +165,7 @@ class Client implements ClientInterface
 
         $uri = $this->getEndpointUrl($uri);
 
-        if (!empty($query)) {
+        if (! empty($query)) {
             $uri .= '?' . http_build_query($query);
         }
 
@@ -223,7 +225,7 @@ class Client implements ClientInterface
     /**
      * Set the client.
      *
-     * @param \GuzzleHttp\ClientInterface $httpClient
+     * @param  \GuzzleHttp\ClientInterface $httpClient
      * @return $this
      */
     public function setHttpClient(HttpInterface $httpClient)
@@ -236,7 +238,7 @@ class Client implements ClientInterface
     /**
      * Set the config.
      *
-     * @param \KoenHoeijmakers\LaravelExact\ClientConfig $clientConfig
+     * @param  \KoenHoeijmakers\LaravelExact\ClientConfig $clientConfig
      * @return $this
      */
     public function setClientConfig(ClientConfig $clientConfig)
@@ -259,10 +261,10 @@ class Client implements ClientInterface
     /**
      * Dynamically handle calls to services.
      *
-     * @param $name
+     * @param  string $name
      * @return \KoenHoeijmakers\LaravelExact\Services\Service|\KoenHoeijmakers\LaravelExact\Support\Fluent\ServiceTraverser
      */
-    public function __get($name)
+    public function __get(string $name)
     {
         return $this->getServiceTraverser()->resolve($name);
     }
@@ -270,11 +272,11 @@ class Client implements ClientInterface
     /**
      * Dynamically handle calls to services.
      *
-     * @param       $name
-     * @param array $arguments
+     * @param  string $name
+     * @param  array  $arguments
      * @return \KoenHoeijmakers\LaravelExact\Services\Service|\KoenHoeijmakers\LaravelExact\Support\Fluent\ServiceTraverser
      */
-    public function __call($name, array $arguments = [])
+    public function __call(string $name, array $arguments = [])
     {
         return $this->getServiceTraverser()->resolve($name);
     }

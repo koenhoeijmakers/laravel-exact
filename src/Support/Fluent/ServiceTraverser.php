@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace KoenHoeijmakers\LaravelExact\Support\Fluent;
 
 use Illuminate\Support\Str;
@@ -24,7 +26,7 @@ class ServiceTraverser
     /**
      * ServiceReach constructor.
      *
-     * @param \KoenHoeijmakers\LaravelExact\ClientInterface $client
+     * @param  \KoenHoeijmakers\LaravelExact\ClientInterface $client
      */
     public function __construct(ClientInterface $client)
     {
@@ -34,8 +36,8 @@ class ServiceTraverser
     /**
      * Dynamically handle calls to resolve.
      *
-     * @param string $name
-     * @param array  $arguments
+     * @param  string $name
+     * @param  array  $arguments
      * @return \KoenHoeijmakers\LaravelExact\Services\Service|\KoenHoeijmakers\LaravelExact\Support\Fluent\ServiceTraverser
      */
     public function __call($name, array $arguments = [])
